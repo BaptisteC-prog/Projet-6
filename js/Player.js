@@ -9,7 +9,7 @@ class Player {
 		this.posX = posX;
 		this.posY = posY;
 		this.myTurn = true;
-		this.myAction="";
+		this.myAction=""; //isAttacking
 		this.canPlay=true;
 		
    
