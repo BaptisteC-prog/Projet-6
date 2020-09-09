@@ -2,8 +2,6 @@ import Cell from "./Cell.js";
 import {player1,player2} from "./Player.js";
 import weaponsList from "./Weapon.js"; 
 
-
-
 let debug=1;
 export default class Grid {
 	constructor(sizeX,sizeY)
@@ -14,7 +12,6 @@ export default class Grid {
 		this.player1=player1;
 		this.player2=player2;
 		this.weapons;
-
 	}
 
 	generate(sizeX,sizeY) {
@@ -26,8 +23,7 @@ export default class Grid {
 	
 
 			var cellsX=[];
-       //mettre une methode ici (le for en une seule ligne)
-			for (let yyy=0;yyy<sizeY;yyy++) {
+ 			for (let yyy=0;yyy<sizeY;yyy++) {
 				
 			let cell =this.generateCol(xxx,yyy);
 			cellsX.push(cell);
@@ -46,7 +42,7 @@ export default class Grid {
 
 		$("#grid").append(newCell);
 
-		if (debug==1) {
+		if (debug===1) {
 			
 			$( ".cell[coord='"+xxx+":"+yyy+"']" ).html(xxx+":"+yyy) ;
 		}
@@ -67,10 +63,7 @@ export default class Grid {
 			 && y<sizeY 
 			 && y>=0 ) {return this.cells[parseInt(x)][parseInt(y)];}
 			 else { console.log("No cell in "+x+":"+y); }
-		
 	}
-
-	
 
 	random(number) {
 		//console.log("Random : "+number);
@@ -146,9 +139,6 @@ export default class Grid {
 	{
 		console.log(`REMOVE PLAYER on ${x}:${y}`);
 		let cell=this.cells[parseInt(x)][parseInt(y)];
-		//let str=cell.content;
-		//str=str.replace("player1","");
-		//str=str.replace("player2","");
 		$( `.cell[coord='${x}:${y}']` ).removeClass("player1").removeClass("player2");
 		this.synchro(x,y);
 	}
@@ -199,7 +189,7 @@ export default class Grid {
 			if ( !cellTest.checkWall()  ) { nbWalls--;}
 		}
 
-		if ( nbWalls==4 ) {
+		if ( nbWalls===4 ) {
 			escape=false;
 		}
 
@@ -245,11 +235,10 @@ export default class Grid {
 
 	synchro(x,y){
 		let elem=$(".cell[coord='"+x+":"+y+"']").attr("class");
-		if (elem == "cell") { $(".cell[coord='"+x+":"+y+"']").addClass("void");  } 
+		if (elem === "cell") { $(".cell[coord='"+x+":"+y+"']").addClass("void");  } 
 		let cell=playboard.pickCell(x,y);
 		cell.content=elem;
 	}
-
 
 }
 
