@@ -61,7 +61,7 @@ function Victory(who) {
 	$('#win').html("<h1>Félicitations ! "+who.name+ " a remporté la victoire !<br> avec "+who.HP+" HP restants</h1>" );
 }
 
-Victory(Bleu);
+//Victory(Bleu);
 
 function coordGet(coords){
 	let cg=coords.split(':');
