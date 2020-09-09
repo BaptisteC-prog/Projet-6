@@ -6,13 +6,8 @@ export default class Weapon {
 		this.minDmg=minDmg;
 		this.maxDmg=maxDmg;
 		this.randomTier=randomTier;
+		this.CSSName="";
 	}
-
-	assignPower(powerMin){
-
-	}
-
-
 	
 }
 
@@ -25,6 +20,11 @@ let weapon3 = new Weapon(3,"Cable WiFi",20,30,2);
 let weapon4 = new Weapon(4,"Clippy",30,45,3);
 
 randomizeWeapons();
+weapon0.CSSName="weapon0";
+weapon1.CSSName="weapon1";
+weapon2.CSSName="weapon2";
+weapon3.CSSName="weapon3";
+weapon4.CSSName="weapon4";
 
 
 export { weapon0,weapon1,weapon2,weapon3,weapon4 };

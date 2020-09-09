@@ -1,20 +1,50 @@
-//import Cell from "./Cell.js";
+import Cell from "./Cell.js";
 import Grid from "./Grid.js";
 import {playboard} from "./Grid.js";
 import Weapon from "./Weapon.js";  // les METHODES de weapon
-//import Player from "./Player.js"; 
+import Player from "./Player.js"; 
 import {player1,player2} from "./Player.js";
 import {weapon0,weapon1,weapon2,weapon3,weapon4} from "./Weapon.js"; //les OBJETS de weapon
 
 $(document).ready(function () {
 	
-	let dmgchart=true;
+	let dmgchart=false;
 	function rnd(p=1){
 		return	Math.pow(Math.random(),p);
 	}
 
-
+	function coordGet(coords){
+		let cg=coords.split(':');
+		return cg;
+	}
 	
+	function refresh(){
+
+		$("#weapon1").html(player1.weapon.name);
+		$("#weapon2").html(player2.weapon.name);
+	
+		$("#hp1").html(player1.HP);
+		$("#hp2").html(player2.HP);
+	
+		player1.name=$("#namePlayer1").val();
+		player2.name=$("#namePlayer2").val();
+	/*
+		if (Bleu.myAction === "att") { $("#modeP1").html("en attaque");  }
+		if (Bleu.myAction === "def") { $("#modeP1").html("en défense");  }
+		
+		if (Rouge.myAction === "att") { $("#modeP2").html("en attaque");  }
+		if (Rouge.myAction === "def") { $("#modeP2").html("en défense");  }*/
+		
+		/*
+		let numItems = $('.item').length;
+		if (numItems >10 ) { $(".item").eq(0).remove(); }
+		
+		if ( Bleu.HP <= 0 ) { Victory(Rouge); }
+		if ( Rouge.HP <= 0 ) { Victory(Bleu); }*/
+		
+	}
+
+	refresh();
 	playboard.generate(sizeX,sizeY);
 
 	let numWalls=Math.ceil((0.075+rnd()*0.075)*sizeX*sizeY);
@@ -25,16 +55,39 @@ $(document).ready(function () {
 	playboard.spawnPlayers();
 	playboard.spawnWeapons();
 
+	let test=playboard.pickCell(5,3);
+	playboard.setObject(5,3,weapon1.CSSName);
+	//console.log(test.getWeapon());
 
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	$('#grid').on('click','.player1', function(){
-
-		if (player1.myTurn) { player1.checkMoves(); }
+		
+		if (player1.myTurn) {
+			player1.checkMoves();
+			player1.canPlay=true;
+		}
+		refresh();
 	});
 
 	$('#grid').on('click','.player2', function(){
 
-		if (player2.myTurn) { player2.checkMoves(); }
+		if (player2.myTurn) {
+			player2.checkMoves();
+			player2.canPlay=true;
+		}
+		refresh();
 	});
+
+
+	$('#overlay').on('click','.check', function(){
+		let newX=coordGet($(this).attr("coord"))[0];
+		let newY=coordGet($(this).attr("coord"))[1];
+		if (player1.myTurn) { player1.move(newX,newY,player1); }
+		if (player2.myTurn) { player2.move(newX,newY,player2); }
+		refresh();
+	});
+
 
 //bilan
 	if ( dmgchart == true ) {

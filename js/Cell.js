@@ -39,4 +39,17 @@ export default class Cell {
 		return test;
 	}
 
+	getWeapon(){
+		let str=this.content;
+		let stuff=str.split(' ');
+		let reg=/weapon/g;
+		for (let w in stuff) {
+			let test=stuff[w];
+			
+			if (test.search(reg)==0) { return stuff[w];  }
+		}
+
+	}
+
+
 }

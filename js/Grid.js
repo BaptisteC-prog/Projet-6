@@ -111,21 +111,51 @@ export default class Grid {
 		console.log(`SETOBJECT on ${x}:${y} with ${what}`);
 		//console.log("SETOBJECT on "+x+":"+y+" with "+what)
 		let cell=this.cells[parseInt(x)][parseInt(y)];
+		
 		while ( !cell.checkFree() ) 
 		{
 			cell=this.randomCell();
 			console.log(`cell occupied, trying with ${cell.x}:${cell.y} ` );
 		}
 
-		cell.content=cell.content.replace("void","");
-		cell.content+=what;
-
+		//cell.content=cell.content.replace("void","");
+		//cell.content+=what;
 		$( `.cell[coord='${x}:${y}']` ).addClass(what).removeClass("void");
+		this.synchro(x,y);
+	}
+
+	remObject(x,y,what)
+	{
+		console.log(`REMOVE OBJECT on ${x}:${y}`);
+		let cell=this.cells[parseInt(x)][parseInt(y)];
+		//let str=cell.content
+		//str=str.replace(what,"");
+		$( `.cell[coord='${x}:${y}']` ).addClass("cell").removeClass(what);
+		this.synchro(x,y);
+	}
+
+	remAll(x,y)
+	{
+		console.log(`REMOVE ALL on ${x}:${y}`);
+		let cell=this.cells[parseInt(x)][parseInt(y)];
+		cell.content="cell void";
+		$( `.cell[coord='${x}:${y}']` ).attr("class","cell void");
+	}
+
+	remPlayer(x,y)
+	{
+		console.log(`REMOVE PLAYER on ${x}:${y}`);
+		let cell=this.cells[parseInt(x)][parseInt(y)];
+		//let str=cell.content;
+		//str=str.replace("player1","");
+		//str=str.replace("player2","");
+		$( `.cell[coord='${x}:${y}']` ).removeClass("player1").removeClass("player2");
+		this.synchro(x,y);
 	}
 
 	setOverlay(x,y,what)
 	{
-		console.log(`SET OVERLAY on ${x}:${y} with ${what}`);
+		//console.log(`SET OVERLAY on ${x}:${y} with ${what}`);
 
 		let newCell=$(`<div class='${what}'></div>`);
 		$("#overlay").append(newCell);
@@ -213,7 +243,12 @@ export default class Grid {
 		}
 	}
 
-
+	synchro(x,y){
+		let elem=$(".cell[coord='"+x+":"+y+"']").attr("class");
+		if (elem == "cell") { $(".cell[coord='"+x+":"+y+"']").addClass("void");  } 
+		let cell=playboard.pickCell(x,y);
+		cell.content=elem;
+	}
 
 
 }

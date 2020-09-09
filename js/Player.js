@@ -1,4 +1,4 @@
-import { weapon0 } from "./Weapon.js";
+import { weapon0,weapon1,weapon2,weapon3,weapon4 } from "./Weapon.js";
 import { playboard } from "./Grid.js";
 import Cell from "./Cell.js";
 import Grid from "./Grid.js";
@@ -20,7 +20,7 @@ export default class Player {
 	}
 
 	checkMoves(){
-
+//retirer player dans content !!!
 		let okMove=true;
 		//en haut
 		for (let up=1; up<4;up++){
@@ -33,6 +33,7 @@ export default class Player {
 					&& okMove 
 					&& this.posY-up>=0) {
 					playboard.setOverlay(this.posX,this.posY-up,"check");
+					
 				}
 			}
 		}
@@ -40,14 +41,16 @@ export default class Player {
 		okMove=true;
 		//a droite
 		for (let right=1; right<4;right++){
-			let cell=playboard.pickCell(parseInt(this.posX+right),this.posY);	
-			if (playboard.isOnBoard(parseInt(this.posX+right),this.posY)){
-				if (cell.checkPlayer() && okMove && right==1 ) { playboard.setOverlay(parseInt(this.posX+right),this.posY,"fight") }
+			let cellAdd=add(this.posX,right);
+			
+			let cell=playboard.pickCell(cellAdd,this.posY);	
+			if (playboard.isOnBoard(cellAdd,this.posY)){
+				if (cell.checkPlayer() && okMove && right==1 ) { playboard.setOverlay(cellAdd,this.posY,"fight") }
 				if (cell.checkPlayer() || cell.checkWall() ) { okMove=false; }
 				if ( (cell.checkFree() || cell.checkWeapon() )
 					&& okMove 
-					&& parseInt(this.posX+right)<=playboard.sizeX) {
-					playboard.setOverlay(parseInt(this.posX+right),this.posY,"check");
+					&& cellAdd<playboard.sizeX) {
+					playboard.setOverlay(cellAdd,this.posY,"check");
 				}	
 			}
 		}
@@ -55,14 +58,18 @@ export default class Player {
 		okMove=true;
 		//en bas
 		for (let down=1; down<4;down++){
-			let cell=playboard.pickCell(this.posX,parseInt(this.posY+down));	
-			if (playboard.isOnBoard(this.posX,parseInt(this.posY+down))){
-				if (cell.checkPlayer() && okMove && down==1 ) { playboard.setOverlay(this.posX,parseInt(this.posY+down),"fight") }
+		
+			//let cellAdd=(this.posY,down);
+			let cellAdd=int(this.posY)+down;
+			
+			let cell=playboard.pickCell(this.posX,cellAdd);	
+			if (playboard.isOnBoard(this.posX,cellAdd)){
+				if (cell.checkPlayer() && okMove && down==1 ) { playboard.setOverlay(this.posX,cellAdd,"fight") }
 				if (cell.checkPlayer() || cell.checkWall() ) { okMove=false; }
 				if ( (cell.checkFree() || cell.checkWeapon() )
 					&& okMove 
-					&& parseInt(this.posY+down)<=playboard.sizeY) {
-					playboard.setOverlay(this.posX,parseInt(this.posY+down),"check");
+					&& cellAdd<playboard.sizeY) {
+					playboard.setOverlay(this.posX,cellAdd,"check");
 				}
 			}
 		}
@@ -83,14 +90,149 @@ export default class Player {
 		}
 	}
 
+	moveUpdate(x,y){
+		this.posX=x;
+		this.posY=y;
+		$('#overlay').html("");
+		endTurn(this);
+	}
+
+	move(x,y,player){
+		if (player.myTurn) {
+			let cell=playboard.pickCell(x,y);
+			let origin=playboard.pickCell(player.posX,player.posY);
+			if ( !cell.checkWeapon()){
+				
+				if (player == player1 && player.canPlay){
+					//playboard.remObject(player1.posX,player1.posY);
+					playboard.remPlayer(player1.posX,player1.posY);
+					if ( !origin.checkWeapon()) { 
+						origin.content+=" void";
+						//playboard.setObject(player.posX,player.posY,"void");
+						$( `.cell[coord='${player.posX}:${player.posY}']` ).addClass("void");
+						playboard.synchro(player.posX,player.posY);
+
+					 }
+					else 
+					{
+						$( `.cell[coord='${player.posX}:${player.posY}']` ).removeClass(player1.weapon.CSSName);
+						
+					}
+					playboard.setObject(x,y,"player1");
+					player.moveUpdate(x,y);
+				}
+
+				if (player == player2 && player.canPlay){
+					//playboard.remObject(player2.posX,player2.posY);
+					playboard.remPlayer(player2.posX,player2.posY);
+					if ( !origin.checkWeapon()) { 
+						origin.content+=" void";
+						//playboard.setObject(player.posX,player.posY,"void");
+						$( `.cell[coord='${player.posX}:${player.posY}']` ).addClass("void");
+						playboard.synchro(player.posX,player.posY);
+					 }
+					else
+					{
+						$( `.cell[coord='${player.posX}:${player.posY}']` ).removeClass(player2.weapon.CSSName);
+					}
+					playboard.setObject(x,y,"player2");
+					player.moveUpdate(x,y);
+				
+				}
+
+			}
+
+			if ( cell.checkWeapon()){
+				
+				player.prevWeapon=player.weapon;
+				//alert(player.weapon.name);
+				if (player == player1 && player.canPlay) {
+					//playboard.remObject(player1.posX,player1.posY);
+					playboard.remPlayer(player1.posX,player1.posY);
+					playboard.synchro(player.posX,player.posY);
+					playboard.remObject(x,y,player1.weapon.CSSName);
+					playboard.setObject(x,y,"player1");
+					player.equip(cell.getWeapon());
+					player.moveUpdate(x,y);
+				}
+				if (player == player2 && player.canPlay) {
+					playboard.remPlayer(player2.posX,player2.posY);
+					playboard.synchro(player.posX,player.posY);
+					//playboard.remObject(player2.posX,player2.posY);
+					playboard.remObject(x,y,player2.weapon.CSSName);
+					playboard.setObject(x,y,"player2");
+					player.equip(cell.getWeapon());
+					player.moveUpdate(x,y);
+				}
+
+				playboard.setObject(x,y,"weapon"+player.prevWeapon.ID);
+			}
+
+		}
+		
 
 
+	}
+
+	equip(weapon){
+		switch (weapon) {
+			case "weapon0":
+				this.weapon=weapon0;
+				break;
+			
+			case "weapon1":
+				this.weapon=weapon1;
+			break
+
+			case "weapon2":
+				this.weapon=weapon2;
+			break
+			
+			case "weapon3":
+				this.weapon=weapon3;
+			break
+			
+			case "weapon4":
+				this.weapon=weapon4;
+			break
+
+			default:
+				break;
+		}
+	}
+	
 
 
 
 }
 
+
+
+function add(a,b){
+	return int(a)+int(b);
+}
+
+function endTurn(who){
+
+	if (who == player1) {
+		player1.myTurn=false;
+		player2.myTurn=true;
+		console.log("end of turn for player1");
+		player1.canPlay=false;
+	}
+	if (who == player2) {
+		player2.myTurn=false;
+		player1.myTurn=true;
+		console.log("end of turn for player2");
+		player2.canPlay=false;
+	}
+
+}
+
+
+
 export let player1=new Player("bleu",0,0);
 export let player2=new Player("rouge",0,0);
-
+player2.myTurn=false;
+player2.canPlay=false;
 //Blue.weapon=weapon0;
